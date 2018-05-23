@@ -32,9 +32,10 @@ def is_ocaml(view):
     Check if the current view is an OCaml source code.
     """
 
-    matcher = 'source.ocaml'
+    ocaml = 'source.ocaml'
+    mlfi = 'source.mlfi'
     location = view.sel()[0].begin()
-    return view.match_selector(location, matcher)
+    return view.match_selector(location, ocaml) or view.match_selector(location, mlfi)
 
 
 def only_ocaml(func):

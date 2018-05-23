@@ -1,0 +1,46 @@
+[
+    {
+        "keys": ["f6"],
+        "command": "merlin_type",
+        "context": [
+	      {
+	        "key": "selector",
+	        "operator": "equal",
+	        "operand": "source.mlfi"
+	      }
+	    ]
+    },
+    {
+        "keys": ["f6"],
+        "command": "merlin_type",
+        "context": [
+	      {
+	        "key": "selector",
+	        "operator": "equal",
+	        "operand": "source.ocaml"
+	      }
+	    ]
+    },
+    {
+        "keys": ["f12"],
+        "command": "merlin_locate_ml",
+        "context": [
+	      {
+	        "key": "selector",
+	        "operator": "equal",
+	        "operand": "source.mlfi"
+	      }
+	    ]
+    },
+    {
+        "keys": ["f12"],
+        "command": "merlin_locate_ml",
+        "context": [
+	      {
+	        "key": "selector",
+	        "operator": "equal",
+	        "operand": "source.ocaml"
+	      }
+	    ]
+    }
+]

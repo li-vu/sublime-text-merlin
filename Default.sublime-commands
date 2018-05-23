@@ -28,8 +28,8 @@
         "command": "merlin_find_mli"
     },
     {
-        "caption": "Merlin: Type expression under cursor",
-        "command": "merlin_type_command"
+        "caption": "Merlin: Find type",
+        "command": "merlin_type"
     },
     {
         "caption": "Merlin: Enable syntax extension",
@@ -40,7 +40,7 @@
         "command": "merlin_disable_extension"
     },
     {
-        "caption": "Merlin: Locate definition under cursor",
+        "caption": "Merlin: Locate definition under the cursor",
         "command": "merlin_locate_ml"
     },
     {

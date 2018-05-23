@@ -66,6 +66,7 @@ class MerlinProcess(object):
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=None,
+                shell=True
             )
 
             err_msg = None

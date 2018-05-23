@@ -13,9 +13,15 @@ import sys
 if sys.version_info < (3, 0):
     from merlin.process import MerlinProcess, MerlinView
     from merlin.helpers import merlin_pos, only_ocaml, clean_whitespace
+    from pygments import highlight
+    from pygments.lexers import OcamlLexer
+    from pygments.formatters import HtmlFormatter
 else:
     from .merlin.process import MerlinProcess, MerlinView
     from .merlin.helpers import merlin_pos, only_ocaml, clean_whitespace
+    from .pygments import highlight
+    from .pygments.lexers import OcamlLexer
+    from .pygments.formatters import HtmlFormatter
 
 running_process = None
 
@@ -196,7 +202,8 @@ class MerlinTypeEnclosing:
         return list(map(self._item_format, self.enclosing))
 
     def show_panel(self):
-        self.view.window().show_quick_panel(self._items(), self.on_done, sublime.MONOSPACE_FONT)
+        sig="\n".join(self._items())
+        self.view.show_popup(highlight(sig, OcamlLexer(), HtmlFormatter()), sublime.HIDE_ON_MOUSE_MOVE_AWAY, -1, 800, 800, None, None)
 
     def show_menu(self):
         self.view.show_popup_menu(self._items(), self.on_done, sublime.MONOSPACE_FONT)
@@ -208,11 +215,11 @@ class MerlinTypeEnclosing:
             sel.add(self._item_region(self.enclosing[index]))
 
 
-class MerlinTypeCommand(sublime_plugin.WindowCommand):
+class MerlinTypeCommand(sublime_plugin.TextCommand):
     """
     Return type information around cursor.
     """
-    def run(self):
+    def run(self, edit):
         enclosing = MerlinTypeEnclosing(self.view)
         enclosing.show_panel()
 

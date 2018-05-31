@@ -9,19 +9,14 @@ import sublime_plugin
 import re
 import os
 import sys
+import mdpopups
 
 if sys.version_info < (3, 0):
     from merlin.process import MerlinProcess, MerlinView
     from merlin.helpers import merlin_pos, only_ocaml, clean_whitespace
-    from pygments import highlight
-    from pygments.lexers import OcamlLexer
-    from pygments.formatters import HtmlFormatter
 else:
     from .merlin.process import MerlinProcess, MerlinView
     from .merlin.helpers import merlin_pos, only_ocaml, clean_whitespace
-    from .pygments import highlight
-    from .pygments.lexers import OcamlLexer
-    from .pygments.formatters import HtmlFormatter
 
 running_process = None
 
@@ -196,14 +191,23 @@ class MerlinTypeEnclosing:
             text += " (*tail-position*)"
         if item['tail'] == 'call':
             text += " (*tail-call*)"
-        return clean_whitespace(text)
+        return "```mlfi\n" + text + "\n```"
 
     def _items(self):
         return list(map(self._item_format, self.enclosing))
 
+    def _first(self):
+        return self._item_format(self.enclosing[0])
+
     def show_panel(self):
-        sig="\n".join(self._items())
-        self.view.show_popup(highlight(sig, OcamlLexer(), HtmlFormatter()), sublime.HIDE_ON_MOUSE_MOVE_AWAY, -1, 800, 800, None, None)
+        signature=self._first()
+        print("=========================================================")
+        print(signature)
+        print("Lang: ", mdpopups.get_language_from_view(self.view))
+        #self.view.show_popup(signature, sublime.HIDE_ON_MOUSE_MOVE_AWAY | sublime.COOPERATE_WITH_AUTO_COMPLETE, -1, 800, 800, None, None)
+        #mdpopups.show_popup(self.view, "```mlfi\n" + signature + "\n```")
+        mdpopups.show_popup(self.view, signature, max_width=800, max_height=600, allow_code_wrap=True)
+        #self.view.show_popup_menu(self._items(), self.on_done, sublime.MONOSPACE_FONT)
 
     def show_menu(self):
         self.view.show_popup_menu(self._items(), self.on_done, sublime.MONOSPACE_FONT)

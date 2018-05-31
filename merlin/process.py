@@ -57,7 +57,7 @@ class MerlinProcess(object):
             except OSError:
                 pass
         try:
-            user_settings = sublime.load_settings("Merlin.sublime-settings")
+            user_settings = sublime.load_settings("Preferences.sublime-settings")
             flags = user_settings.get('flags')
             command = [merlin_bin()]
             command.extend(flags)

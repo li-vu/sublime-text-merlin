@@ -1,7 +1,7 @@
 import functools
 import subprocess
 import os
-
+import re
 import sublime
 
 
@@ -64,5 +64,5 @@ def clean_whitespace(text):
     """
     Replace sequence of whitespaces by a single space
     """
-
-    return text #' '.join(text.split())
+    return text
+    #return re.sub(r'\r\n|\n', "\t", text)

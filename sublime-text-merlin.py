@@ -400,8 +400,8 @@ class Autocomplete(sublime_plugin.EventListener):
 
             self.cplns = []
             for r in result['entries']:
-                name = clean_whitespace(r['name'])
-                desc = clean_whitespace(r['desc'])
+                name = r['name']
+                desc = r['desc']
                 self.cplns.append(((name + '\t' + desc), name))
 
             self.show_completions(view, self.cplns)
@@ -461,7 +461,8 @@ class MerlinErrorPanel(object):
             window = sublime.active_window()
         if not self.is_visible(window):
             self.view = window.get_output_panel("merlin")
-            self.view.settings().set("result_file_regex", "^(.+):([0-9]+):([0-9]+)")
+            self.view.settings().set('font_size', 10)
+            self.view.settings().set('syntax', 'Packages/Merlin/merlin-errors.sublime-syntax')
         self.flush()
 
         window.run_command("show_panel", {"panel": "output.merlin"})
@@ -472,7 +473,6 @@ class MerlinErrorPanel(object):
         })
 
 merlin_error_panel = MerlinErrorPanel()
-
 
 class MerlinBuffer(sublime_plugin.EventListener):
     """
@@ -490,8 +490,8 @@ class MerlinBuffer(sublime_plugin.EventListener):
         """
 
         merlin_view(view).sync()
-        self.display_in_error_panel(view)
         self.show_errors(view)
+        self.display_in_error_panel(view)
 
     @only_ocaml
     def on_modified(self, view):
@@ -530,7 +530,6 @@ class MerlinBuffer(sublime_plugin.EventListener):
 
         error_messages = []
         underlines = []
-
         for e in errors:
             if 'start' in e and 'end' in e:
                 pos_start = e['start']
@@ -543,12 +542,11 @@ class MerlinBuffer(sublime_plugin.EventListener):
                 underlines.append(r)
 
                 # Remove line and character number
-                message = e['message']
-
+                message = clean_whitespace(e['message'])
                 error_messages.append((line_r, message))
 
         self.error_messages = error_messages
-        flag = sublime.DRAW_OUTLINED
+        flag = sublime.PERSISTENT | sublime.DRAW_SOLID_UNDERLINE | sublime.DRAW_NO_FILL | sublime.DRAW_NO_OUTLINE
         # add_regions(key, regions, scope, icon, flags)
         view.add_regions('ocaml-underlines-errors', underlines, 'invalid',
                          self.gutter_icon_path(), flag)
@@ -557,6 +555,10 @@ class MerlinBuffer(sublime_plugin.EventListener):
     def on_selection_modified(self, view):
         self.display_in_error_panel(view)
 
+    def __get_lineno(self, view, pos):
+        (r, c) = view.rowcol(pos)
+        return r
+
     def display_in_error_panel(self, view):
         """
         Display error message to the status bar when the selection intersects
@@ -564,8 +566,11 @@ class MerlinBuffer(sublime_plugin.EventListener):
         """
 
         caret_region = view.sel()[0]
-
         for message_region, message_text in self.error_messages:
             if message_region.intersects(caret_region):
+                message = "%d: %s" % (self.__get_lineno(view, message_region.begin()), message_text)
                 merlin_error_panel.open()
-                merlin_error_panel.set_data(message_text)
+                merlin_error_panel.set_data(message)
+                return
+            else:
+                merlin_error_panel.close()

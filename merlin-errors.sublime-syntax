@@ -1,0 +1,15 @@
+%YAML1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: merlin-errors
+hidden: true
+scope: source.merlin-errors
+contexts:
+  main:
+    - match: '^(Hint):'
+      captures:
+        1: comment.merlin-errors
+
+    - match: '^(\d+):'
+      captures:
+        1: constant.numeric.merlin-errors

@@ -179,6 +179,7 @@ class MerlinTypeEnclosing:
         # }
         self.enclosing = merlin.type_enclosing(line + 1, col)
         self.view = view
+        self.language = mdpopups.get_language_from_view(self.view)
 
     def _item_region(self, item):
         start = merlin_pos(self.view, item['start'])
@@ -191,7 +192,7 @@ class MerlinTypeEnclosing:
             text += " (*tail-position*)"
         if item['tail'] == 'call':
             text += " (*tail-call*)"
-        return "```mlfi\n" + text + "\n```"
+        return "```{0}\n{1}\n```".format(self.language, text)
 
     def _items(self):
         return list(map(self._item_format, self.enclosing))
@@ -200,14 +201,7 @@ class MerlinTypeEnclosing:
         return self._item_format(self.enclosing[0])
 
     def show_panel(self):
-        signature=self._first()
-        print("=========================================================")
-        print(signature)
-        print("Lang: ", mdpopups.get_language_from_view(self.view))
-        #self.view.show_popup(signature, sublime.HIDE_ON_MOUSE_MOVE_AWAY | sublime.COOPERATE_WITH_AUTO_COMPLETE, -1, 800, 800, None, None)
-        #mdpopups.show_popup(self.view, "```mlfi\n" + signature + "\n```")
-        mdpopups.show_popup(self.view, signature, max_width=800, max_height=600, allow_code_wrap=True)
-        #self.view.show_popup_menu(self._items(), self.on_done, sublime.MONOSPACE_FONT)
+        mdpopups.show_popup(self.view, self._first(), max_width=800, max_height=600, allow_code_wrap=True)
 
     def show_menu(self):
         self.view.show_popup_menu(self._items(), self.on_done, sublime.MONOSPACE_FONT)

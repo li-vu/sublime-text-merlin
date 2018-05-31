@@ -164,12 +164,13 @@ class MerlinTypeEnclosing:
     Return type information around cursor.
     """
 
-    def __init__(self, view):
+    def __init__(self, view, pos=None):
         merlin = merlin_view(view)
         merlin.sync()
 
-        pos = view.sel()
-        line, col = view.rowcol(pos[0].begin())
+        if pos == None:
+            pos = view.sel()[0].begin()
+        line, col = view.rowcol(pos)
 
         # FIXME: proper integration into sublime-text
         # enclosing is a list of json objects of the form:
@@ -200,8 +201,8 @@ class MerlinTypeEnclosing:
     def _first(self):
         return self._item_format(self.enclosing[0])
 
-    def show_panel(self):
-        mdpopups.show_popup(self.view, self._first(), max_width=800, max_height=600, allow_code_wrap=True)
+    def show_panel(self, pos=None):
+        mdpopups.show_popup(self.view, self._first(), location=pos if pos else -1, max_width=800, max_height=600, allow_code_wrap=True)
 
     def show_menu(self):
         self.view.show_popup_menu(self._items(), self.on_done, sublime.MONOSPACE_FONT)
@@ -221,6 +222,16 @@ class MerlinTypeCommand(sublime_plugin.TextCommand):
         enclosing = MerlinTypeEnclosing(self.view)
         enclosing.show_panel()
 
+class MerlinTypeOnHover(sublime_plugin.EventListener):
+    """
+    Return type info on hover
+    """
+    @only_ocaml
+    def on_hover(self, view, point, hover_zone):
+        if hover_zone != sublime.HOVER_TEXT:
+            return
+        enclosing = MerlinTypeEnclosing(view, point)
+        enclosing.show_panel(point)
 
 class MerlinTypeMenu(sublime_plugin.TextCommand):
     """
@@ -269,7 +280,7 @@ class MerlinLocateNameMli(sublime_plugin.WindowCommand):
     """
     Locate definition by name
     """
-    def run(self, edit):
+    def run(self):
         self.window.show_input_panel("Enter name", "", self.on_done, None, None)
 
     def kind(self):
@@ -289,11 +300,25 @@ class MerlinLocateMl(MerlinLocateMli):
     def kind(self):
         return "ml"
 
-
 class MerlinLocateNameMl(MerlinLocateNameMli):
     def kind(self):
         return "ml"
 
+class MerlinLocateMf(MerlinLocateMli):
+    def kind(self):
+        return "mf"
+
+class MerlinLocateNameMf(MerlinLocateNameMli):
+    def kind(self):
+        return "mfi"
+
+class MerlinLocateMf(MerlinLocateMli):
+    def kind(self):
+        return "mfi"
+
+class MerlinLocateNameMf(MerlinLocateNameMli):
+    def kind(self):
+        return "mf"
 
 class MerlinWhich(sublime_plugin.WindowCommand):
     """
@@ -306,7 +331,6 @@ class MerlinWhich(sublime_plugin.WindowCommand):
     def run(self):
         view = self.window.active_view()
         self.merlin = merlin_view(view)
-
         self.files = self.merlin.which_with_ext(self.extensions())
         self.window.show_quick_panel(self.files, self.on_done)
 
@@ -323,7 +347,7 @@ class MerlinFindMl(MerlinWhich):
     """
 
     def extensions(self):
-        return [".ml", ".mli"]
+        return [".ml", ".mli",".mf", ".mfi"]
 
 
 class MerlinFindMli(MerlinWhich):
@@ -332,7 +356,7 @@ class MerlinFindMli(MerlinWhich):
     """
 
     def extensions(self):
-        return [".mli", ".ml"]
+        return [".mli", ".ml", ".mfi", ".mf"]
 
 
 class Autocomplete(sublime_plugin.EventListener):

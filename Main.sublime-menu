@@ -13,7 +13,7 @@
                             {
                                 "caption": "Settings – Default", 
                                 "args": {
-                                    "file": "${packages}/Merlin/Merlin.sublime-settings"
+                                    "file": "${packages}/Merlin/Preferences.sublime-settings"
                                 }, 
                                 "command": "open_file"
                             }, 

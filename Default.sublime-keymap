@@ -42,5 +42,27 @@
 	        "operand": "source.ocaml"
 	      }
 	    ]
+    },
+    {
+        "keys": ["shift+f12"],
+        "command": "merlin_locate_mli",
+        "context": [
+	      {
+	        "key": "selector",
+	        "operator": "equal",
+	        "operand": "source.mlfi"
+	      }
+	    ]
+    },
+    {
+        "keys": ["shift+f12"],
+        "command": "merlin_locate_mli",
+        "context": [
+	      {
+	        "key": "selector",
+	        "operator": "equal",
+	        "operand": "source.ocaml"
+	      }
+	    ]
     }
 ]

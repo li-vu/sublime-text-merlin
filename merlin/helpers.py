@@ -65,4 +65,4 @@ def clean_whitespace(text):
     Replace sequence of whitespaces by a single space
     """
 
-    return ' '.join(text.split())
+    return text #' '.join(text.split())
